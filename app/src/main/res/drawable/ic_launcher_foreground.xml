@@ -1,0 +1,10 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- M letter stylized as Mories logo -->
+    <path
+        android:fillColor="#E50914"
+        android:pathData="M34,34 L34,74 L40,74 L40,50 L50,64 L54,64 L54,64 L58,64 L68,50 L68,74 L74,74 L74,34 L68,34 L54,54 L40,34 Z"/>
+</vector>
