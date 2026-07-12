@@ -7,9 +7,9 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -37,7 +37,7 @@ fun MovieCard(
     title: String,
     voteAverage: Double,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier.width(140.dp).aspectRatio(2/3f)
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
@@ -48,8 +48,6 @@ fun MovieCard(
 
     Box(
         modifier = modifier
-            .width(140.dp)
-            .height(210.dp)
             .scale(scale)
             .clip(RoundedCornerShape(8.dp))
             .clickable(

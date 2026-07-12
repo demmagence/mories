@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -51,13 +52,11 @@ fun ShimmerBrush(): Brush {
 
 @Composable
 fun ShimmerMovieCard(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier.width(140.dp).aspectRatio(2/3f)
 ) {
     val brush = ShimmerBrush()
     Box(
         modifier = modifier
-            .width(140.dp)
-            .height(210.dp)
             .clip(RoundedCornerShape(8.dp))
             .background(brush)
     )
