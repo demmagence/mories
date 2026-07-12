@@ -7,8 +7,8 @@ import java.io.File
 @HiltAndroidApp
 class MoriesApp : Application() {
     override fun onCreate() {
-        super.onCreate()
         // Catch all uncaught exceptions and save them to a file in cache directory
+        // MUST BE SET BEFORE super.onCreate() so Hilt/Room startup errors are captured!
         val oldHandler = Thread.getDefaultUncaughtExceptionHandler()
         Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
             try {
@@ -24,5 +24,6 @@ class MoriesApp : Application() {
                 java.lang.System.exit(10)
             }
         }
+        super.onCreate()
     }
 }
