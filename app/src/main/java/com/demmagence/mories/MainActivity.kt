@@ -48,24 +48,29 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        val splashScreen = installSplashScreen()
-        
-        // Check for previous crash log first
+        // Install splash screen FIRST (before super.onCreate as required by SplashScreen API)
+        installSplashScreen()
+
+        // ALWAYS call super.onCreate() - this is REQUIRED for the Activity to function
+        super.onCreate(savedInstanceState)
+
+        // Check for previous crash log
         val crashFile = java.io.File(cacheDir, "crash_log.txt")
         if (crashFile.exists()) {
             val stackTrace = try {
                 crashFile.readText()
             } catch (e: Exception) {
                 "Failed to read crash log: ${e.message}"
-            } finally {
-                crashFile.delete()
             }
+            // Delete after reading
+            try { crashFile.delete() } catch (_: Exception) {}
+
+            try { enableEdgeToEdge() } catch (_: Exception) {}
             showCrashScreen(stackTrace)
             return
         }
 
         try {
-            super.onCreate(savedInstanceState)
             enableEdgeToEdge()
             setContent {
                 MoriesTheme {
@@ -79,11 +84,6 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun showCrashScreen(errorText: String) {
-        // Clean layout / theme since parent initialization might have failed
-        try {
-            enableEdgeToEdge()
-        } catch (e: Exception) {}
-        
         setContent {
             androidx.compose.material3.MaterialTheme {
                 androidx.compose.foundation.layout.Box(
