@@ -42,3 +42,23 @@
 -keep class * extends androidx.room.RoomDatabase
 -keep @androidx.room.Entity class *
 -dontwarn androidx.room.paging.**
+
+# Navigation type-safe routes (Screen sealed interface + data objects)
+-keep class com.demmagence.mories.ui.navigation.Screen { *; }
+-keep class com.demmagence.mories.ui.navigation.Screen$* { *; }
+
+# Hilt
+-keep class dagger.hilt.** { *; }
+-keep class javax.inject.** { *; }
+-keep @dagger.hilt.android.AndroidEntryPoint class *
+-keep @dagger.hilt.android.HiltAndroidApp class *
+-keep @dagger.hilt.InstallIn class *
+-keep @dagger.Module class *
+-keepclassmembers class * {
+    @javax.inject.Inject <init>(...);
+    @javax.inject.Inject <fields>;
+}
+
+# Coil
+-keep class coil.** { *; }
+-dontwarn coil.**
