@@ -5,7 +5,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -36,6 +38,7 @@ fun WatchlistScreen(
     val watchlistItems by viewModel.watchlistItems.collectAsStateWithLifecycle(initialValue = emptyList())
 
     Column(modifier = Modifier.fillMaxSize()) {
+        // Header
         Text(
             text = "Watchlist",
             style = MaterialTheme.typography.headlineMedium,
@@ -83,7 +86,8 @@ fun WatchlistScreen(
                         posterPath = item.posterPath,
                         title = item.title,
                         voteAverage = item.voteAverage,
-                        onClick = { onItemClick(item.id, item.mediaType) }
+                        onClick = { onItemClick(item.id, item.mediaType) },
+                        modifier = Modifier.fillMaxWidth().aspectRatio(2/3f)
                     )
                 }
             }

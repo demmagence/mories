@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -41,14 +42,16 @@ fun SeriesScreen(
     val tvShows = viewModel.tvShows.collectAsLazyPagingItems()
 
     Column(modifier = Modifier.fillMaxSize()) {
+        // Header
         Text(
-            text = "Series",
+            text = "TV Series",
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
         )
 
+        // Genre filter chips
         if (genres.isNotEmpty()) {
             LazyRow(
                 contentPadding = PaddingValues(horizontal = 16.dp),
@@ -66,6 +69,7 @@ fun SeriesScreen(
             Spacer(modifier = Modifier.height(12.dp))
         }
 
+        // Series grid
         when (val loadState = tvShows.loadState.refresh) {
             is LoadState.Loading -> {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -92,7 +96,8 @@ fun SeriesScreen(
                                 posterPath = tvShow.posterPath,
                                 title = tvShow.name,
                                 voteAverage = tvShow.voteAverage,
-                                onClick = { onTvClick(tvShow.id) }
+                                onClick = { onTvClick(tvShow.id) },
+                                modifier = Modifier.fillMaxWidth().aspectRatio(2/3f)
                             )
                         }
                     }
