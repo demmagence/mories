@@ -9,6 +9,12 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.background
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.ui.unit.dp
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -43,11 +49,83 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+        
+        // Check for previous crash log first
+        val crashFile = java.io.File(cacheDir, "crash_log.txt")
+        if (crashFile.exists()) {
+            val stackTrace = try {
+                crashFile.readText()
+            } catch (e: Exception) {
+                "Failed to read crash log: ${e.message}"
+            } finally {
+                crashFile.delete()
+            }
+            showCrashScreen(stackTrace)
+            return
+        }
+
+        try {
+            super.onCreate(savedInstanceState)
+            enableEdgeToEdge()
+            setContent {
+                MoriesTheme {
+                    MoriesMainContent()
+                }
+            }
+        } catch (e: Throwable) {
+            e.printStackTrace()
+            showCrashScreen(e.stackTraceToString())
+        }
+    }
+
+    private fun showCrashScreen(errorText: String) {
+        // Clean layout / theme since parent initialization might have failed
+        try {
+            enableEdgeToEdge()
+        } catch (e: Exception) {}
+        
         setContent {
-            MoriesTheme {
-                MoriesMainContent()
+            androidx.compose.material3.MaterialTheme {
+                androidx.compose.foundation.layout.Box(
+                    modifier = androidx.compose.ui.Modifier
+                        .fillMaxSize()
+                        .background(androidx.compose.ui.graphics.Color(0xFF0F0F0F))
+                        .padding(24.dp),
+                    contentAlignment = androidx.compose.ui.Alignment.TopStart
+                ) {
+                    androidx.compose.foundation.layout.Column(
+                        modifier = androidx.compose.ui.Modifier
+                            .verticalScroll(rememberScrollState())
+                    ) {
+                        androidx.compose.material3.Text(
+                            text = "Mories - Terjadi Kesalahan",
+                            color = androidx.compose.ui.graphics.Color(0xFFE50914),
+                            style = androidx.compose.material3.MaterialTheme.typography.titleLarge,
+                            fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+                        )
+                        androidx.compose.foundation.layout.Spacer(modifier = androidx.compose.ui.Modifier.height(16.dp))
+                        androidx.compose.material3.Text(
+                            text = "Silakan screenshot layar ini untuk melaporkan error:",
+                            color = androidx.compose.ui.graphics.Color.White,
+                            style = androidx.compose.material3.MaterialTheme.typography.bodyMedium
+                        )
+                        androidx.compose.foundation.layout.Spacer(modifier = androidx.compose.ui.Modifier.height(16.dp))
+                        androidx.compose.material3.Card(
+                            colors = androidx.compose.material3.CardDefaults.cardColors(
+                                containerColor = androidx.compose.ui.graphics.Color(0xFF1F1F1F)
+                            ),
+                            modifier = androidx.compose.ui.Modifier.fillMaxWidth()
+                        ) {
+                            androidx.compose.material3.Text(
+                                text = errorText,
+                                color = androidx.compose.ui.graphics.Color(0xFFCCCCCC),
+                                style = androidx.compose.material3.MaterialTheme.typography.bodySmall,
+                                modifier = androidx.compose.ui.Modifier.padding(12.dp),
+                                fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace
+                            )
+                        }
+                    }
+                }
             }
         }
     }
