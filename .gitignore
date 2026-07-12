@@ -63,3 +63,7 @@ desktop.ini
 
 # Misc
 *.hprof
+
+# Custom rules
+.agents/
+
