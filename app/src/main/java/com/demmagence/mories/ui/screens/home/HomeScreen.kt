@@ -52,32 +52,19 @@ fun HomeScreen(
         return
     }
 
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        containerColor = MoriesBackground,
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = "Mories",
-                        style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
-                    )
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MoriesBackground
-                ),
-                windowInsets = WindowInsets(0.dp)
-            )
-        }
-    ) { innerPadding ->
+    Column(modifier = Modifier.fillMaxSize()) {
+        Text(
+            text = "Mories",
+            style = MaterialTheme.typography.headlineMedium,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onBackground,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
+        )
+
         PullToRefreshBox(
             isRefreshing = uiState.isRefreshing,
             onRefresh = { viewModel.refresh() },
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
+            modifier = Modifier.fillMaxSize()
         ) {
             Column(
                 modifier = Modifier
