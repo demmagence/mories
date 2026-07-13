@@ -91,38 +91,12 @@ fun MovieDetailScreen(
             val detail = uiState.movieDetail!!
             var showFullOverview by remember { mutableStateOf(false) }
 
-            Scaffold(
-                modifier = Modifier.fillMaxSize(),
-                containerColor = MoriesBackground,
-                topBar = {
-                    TopAppBar(
-                        title = {},
-                        navigationIcon = {
-                            IconButton(onClick = onBackClick) {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                    contentDescription = "Back",
-                                    tint = Color.White
-                                )
-                            }
-                        },
-                        colors = TopAppBarDefaults.topAppBarColors(
-                            containerColor = MoriesBackground
-                        ),
-                        windowInsets = WindowInsets(0.dp)
-                    )
-                }
-            ) { innerPadding ->
-                Box(
+            Box(modifier = Modifier.fillMaxSize()) {
+                Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(innerPadding)
+                        .verticalScroll(rememberScrollState())
                 ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .verticalScroll(rememberScrollState())
-                    ) {
                     // Backdrop
                     Box(
                         modifier = Modifier
@@ -394,8 +368,25 @@ fun MovieDetailScreen(
 
                     Spacer(modifier = Modifier.height(32.dp))
                 }
+
+                // Top bar overlay
+                TopAppBar(
+                    title = {},
+                    navigationIcon = {
+                        IconButton(onClick = onBackClick) {
+                            Icon(
+                                Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Back",
+                                tint = Color.White
+                            )
+                        }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color.Transparent
+                    ),
+                    windowInsets = WindowInsets(0.dp)
+                )
             }
         }
     }
-}
 }
