@@ -10,10 +10,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -24,6 +30,7 @@ import com.demmagence.mories.ui.components.MovieRow
 import com.demmagence.mories.ui.components.MovieRowItem
 import com.demmagence.mories.ui.components.ShimmerHeroBanner
 import com.demmagence.mories.ui.components.ShimmerMovieRow
+import com.demmagence.mories.ui.theme.MoriesBackground
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -43,16 +50,36 @@ fun HomeScreen(
         return
     }
 
-    PullToRefreshBox(
-        isRefreshing = uiState.isRefreshing,
-        onRefresh = { viewModel.refresh() },
-        modifier = Modifier.fillMaxSize()
-    ) {
-        Column(
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        containerColor = MoriesBackground,
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "Mories",
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MoriesBackground
+                )
+            )
+        }
+    ) { innerPadding ->
+        PullToRefreshBox(
+            isRefreshing = uiState.isRefreshing,
+            onRefresh = { viewModel.refresh() },
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
+                .padding(innerPadding)
         ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+            ) {
             // Hero Banner
             if (uiState.isLoading) {
                 ShimmerHeroBanner()
@@ -161,6 +188,7 @@ fun HomeScreen(
             }
         }
     }
+}
 }
 
 private fun com.demmagence.mories.domain.model.Movie.toRowItem() = MovieRowItem(
