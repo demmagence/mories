@@ -11,6 +11,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.EmojiEvents
+import androidx.compose.material.icons.filled.Movie
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.Whatshot
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -116,64 +122,72 @@ fun HomeScreen(
             } else {
                 // Trending Movies
                 MovieRow(
-                    title = "\uD83D\uDD25 Trending Movies",
+                    title = "Trending Movies",
                     items = uiState.trendingMovies.map { it.toRowItem() },
+                    icon = Icons.Filled.Whatshot,
                     onItemClick = { id, _ -> onMovieClick(id) }
                 )
                 Spacer(modifier = Modifier.height(20.dp))
 
                 // Trending TV Shows
                 MovieRow(
-                    title = "\uD83D\uDD25 Trending Series",
+                    title = "Trending Series",
                     items = uiState.trendingTvShows.map { it.toRowItem() },
+                    icon = Icons.Filled.Whatshot,
                     onItemClick = { id, _ -> onTvClick(id) }
                 )
                 Spacer(modifier = Modifier.height(20.dp))
 
                 // Now Playing
                 MovieRow(
-                    title = "🎬 Now Playing",
+                    title = "Now Playing",
                     items = uiState.nowPlayingMovies.map { it.toRowItem() },
+                    icon = Icons.Filled.Movie,
                     onItemClick = { id, _ -> onMovieClick(id) }
                 )
                 Spacer(modifier = Modifier.height(20.dp))
 
                 // Popular Movies
                 MovieRow(
-                    title = "⭐ Popular Movies",
+                    title = "Popular Movies",
                     items = uiState.popularMovies.map { it.toRowItem() },
+                    icon = Icons.Filled.Star,
                     onItemClick = { id, _ -> onMovieClick(id) }
                 )
                 Spacer(modifier = Modifier.height(20.dp))
 
                 // Top Rated Movies
                 MovieRow(
-                    title = "🏆 Top Rated Movies",
+                    title = "Top Rated Movies",
                     items = uiState.topRatedMovies.map { it.toRowItem() },
+                    icon = Icons.Filled.EmojiEvents,
                     onItemClick = { id, _ -> onMovieClick(id) }
                 )
                 Spacer(modifier = Modifier.height(20.dp))
 
                 // Upcoming Movies
                 MovieRow(
-                    title = "📅 Upcoming Movies",
+                    title = "Upcoming Movies",
                     items = uiState.upcomingMovies.map { it.toRowItem() },
+                    icon = Icons.Filled.CalendarMonth,
                     onItemClick = { id, _ -> onMovieClick(id) }
                 )
                 Spacer(modifier = Modifier.height(20.dp))
 
                 // Popular TV Shows
                 MovieRow(
-                    title = "📺 Popular Series",
+                    title = "Popular Series",
                     items = uiState.popularTvShows.map { it.toRowItem() },
+                    icon = Icons.Filled.Star,
                     onItemClick = { id, _ -> onTvClick(id) }
                 )
                 Spacer(modifier = Modifier.height(20.dp))
 
                 // Top Rated TV Shows
                 MovieRow(
-                    title = "🏆 Top Rated Series",
+                    title = "Top Rated Series",
                     items = uiState.topRatedTvShows.map { it.toRowItem() },
+                    icon = Icons.Filled.EmojiEvents,
                     onItemClick = { id, _ -> onTvClick(id) }
                 )
                 Spacer(modifier = Modifier.height(24.dp))
