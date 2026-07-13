@@ -92,12 +92,38 @@ fun TvDetailScreen(
             val detail = uiState.tvDetail!!
             var showSeasonDropdown by remember { mutableStateOf(false) }
 
-            Box(modifier = Modifier.fillMaxSize()) {
-                Column(
+            Scaffold(
+                modifier = Modifier.fillMaxSize(),
+                containerColor = MoriesBackground,
+                topBar = {
+                    TopAppBar(
+                        title = {},
+                        navigationIcon = {
+                            IconButton(onClick = onBackClick) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                    contentDescription = "Back",
+                                    tint = Color.White
+                                )
+                            }
+                        },
+                        colors = TopAppBarDefaults.topAppBarColors(
+                            containerColor = MoriesBackground
+                        ),
+                        windowInsets = WindowInsets(0.dp)
+                    )
+                }
+            ) { innerPadding ->
+                Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .verticalScroll(rememberScrollState())
+                        .padding(innerPadding)
                 ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState())
+                    ) {
                     // Backdrop
                     Box(
                         modifier = Modifier
@@ -358,23 +384,8 @@ fun TvDetailScreen(
 
                     Spacer(modifier = Modifier.height(32.dp))
                 }
-
-                // Top bar overlay
-                TopAppBar(
-                    title = {},
-                    navigationIcon = {
-                        IconButton(onClick = onBackClick) {
-                            Icon(
-                                Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "Back",
-                                tint = Color.White
-                            )
-                        }
-                    },
-                    colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
-                    windowInsets = WindowInsets(0.dp)
-                )
             }
         }
     }
+}
 }
