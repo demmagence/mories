@@ -49,7 +49,11 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -89,7 +93,6 @@ fun MovieDetailScreen(
         )
         uiState.movieDetail != null -> {
             val detail = uiState.movieDetail!!
-            var showFullOverview by remember { mutableStateOf(false) }
 
             Scaffold(
                 modifier = Modifier.fillMaxSize(),
@@ -268,23 +271,8 @@ fun MovieDetailScreen(
                         Text(
                             text = detail.overview,
                             style = MaterialTheme.typography.bodyMedium,
-                            color = MoriesOnSurfaceVariant,
-                            maxLines = if (showFullOverview) Int.MAX_VALUE else 4,
-                            overflow = TextOverflow.Ellipsis
+                            color = MoriesOnSurfaceVariant
                         )
-                        if (detail.overview.length > 200) {
-                            Text(
-                                text = if (showFullOverview) "Show Less" else "Read More",
-                                style = MaterialTheme.typography.labelLarge,
-                                color = MoriesPrimary,
-                                modifier = Modifier.padding(top = 4.dp).then(
-                                    Modifier.background(Color.Transparent)
-                                ).also {
-                                    // Make clickable via modifier
-                                },
-                                fontWeight = FontWeight.SemiBold
-                            )
-                        }
 
                         // Cast
                         if (detail.cast.isNotEmpty()) {
@@ -353,7 +341,7 @@ fun MovieDetailScreen(
                                     }
                                     Spacer(modifier = Modifier.height(8.dp))
                                     Text(
-                                        text = review.content,
+                                        text = parseMarkdownToAnnotatedString(review.content),
                                         style = MaterialTheme.typography.bodySmall,
                                         color = MoriesOnSurfaceVariant,
                                         maxLines = 5,
@@ -398,4 +386,19 @@ fun MovieDetailScreen(
         }
     }
 }
+}
+
+private fun parseMarkdownToAnnotatedString(text: String): AnnotatedString {
+    return buildAnnotatedString {
+        val parts = text.split("**")
+        parts.forEachIndexed { index, part ->
+            if (index % 2 != 0) {
+                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                    append(part)
+                }
+            } else {
+                append(part)
+            }
+        }
+    }
 }

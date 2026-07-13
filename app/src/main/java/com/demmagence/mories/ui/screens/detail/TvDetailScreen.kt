@@ -252,9 +252,7 @@ fun TvDetailScreen(
                         Text(
                             text = detail.overview,
                             style = MaterialTheme.typography.bodyMedium,
-                            color = MoriesOnSurfaceVariant,
-                            maxLines = 4,
-                            overflow = TextOverflow.Ellipsis
+                            color = MoriesOnSurfaceVariant
                         )
 
                         // Cast
