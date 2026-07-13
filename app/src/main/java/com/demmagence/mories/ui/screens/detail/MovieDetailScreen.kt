@@ -33,6 +33,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -89,12 +90,37 @@ fun MovieDetailScreen(
             val detail = uiState.movieDetail!!
             var showFullOverview by remember { mutableStateOf(false) }
 
-            Box(modifier = Modifier.fillMaxSize()) {
-                Column(
+            Scaffold(
+                modifier = Modifier.fillMaxSize(),
+                containerColor = MoriesBackground,
+                topBar = {
+                    TopAppBar(
+                        title = {},
+                        navigationIcon = {
+                            IconButton(onClick = onBackClick) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                    contentDescription = "Back",
+                                    tint = Color.White
+                                )
+                            }
+                        },
+                        colors = TopAppBarDefaults.topAppBarColors(
+                            containerColor = MoriesBackground
+                        )
+                    )
+                }
+            ) { innerPadding ->
+                Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .verticalScroll(rememberScrollState())
+                        .padding(innerPadding)
                 ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState())
+                    ) {
                     // Backdrop
                     Box(
                         modifier = Modifier
@@ -366,24 +392,8 @@ fun MovieDetailScreen(
 
                     Spacer(modifier = Modifier.height(32.dp))
                 }
-
-                // Top bar overlay
-                TopAppBar(
-                    title = {},
-                    navigationIcon = {
-                        IconButton(onClick = onBackClick) {
-                            Icon(
-                                Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "Back",
-                                tint = Color.White
-                            )
-                        }
-                    },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = Color.Transparent
-                    )
-                )
             }
         }
     }
+}
 }
