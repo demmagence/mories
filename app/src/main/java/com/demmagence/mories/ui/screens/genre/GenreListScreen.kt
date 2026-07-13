@@ -1,5 +1,6 @@
 package com.demmagence.mories.ui.screens.genre
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -44,7 +45,7 @@ fun GenreListScreen(
 ) {
     val items = viewModel.items.collectAsLazyPagingItems()
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = Modifier.fillMaxSize().background(MoriesBackground)) {
         TopAppBar(
             title = {
                 Text(

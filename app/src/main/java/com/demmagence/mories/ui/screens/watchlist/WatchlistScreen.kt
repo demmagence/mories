@@ -1,5 +1,6 @@
 package com.demmagence.mories.ui.screens.watchlist
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.demmagence.mories.ui.components.MovieCard
+import com.demmagence.mories.ui.theme.MoriesBackground
 import com.demmagence.mories.ui.theme.MoriesTextSecondary
 
 @Composable
@@ -37,7 +39,7 @@ fun WatchlistScreen(
 ) {
     val watchlistItems by viewModel.watchlistItems.collectAsStateWithLifecycle(initialValue = emptyList())
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = Modifier.fillMaxSize().background(MoriesBackground)) {
         // Header
         Text(
             text = "Watchlist",
