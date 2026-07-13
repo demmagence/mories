@@ -1,5 +1,6 @@
 package com.demmagence.mories.ui.screens.series
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,6 +31,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.demmagence.mories.ui.components.ErrorState
 import com.demmagence.mories.ui.components.GenreChip
 import com.demmagence.mories.ui.components.MovieCard
+import com.demmagence.mories.ui.theme.MoriesBackground
 import com.demmagence.mories.ui.theme.MoriesPrimary
 
 @Composable
@@ -41,7 +43,7 @@ fun SeriesScreen(
     val selectedGenreId by viewModel.selectedGenreId.collectAsStateWithLifecycle()
     val tvShows = viewModel.tvShows.collectAsLazyPagingItems()
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = Modifier.fillMaxSize().background(MoriesBackground)) {
         // Header
         Text(
             text = "TV Series",

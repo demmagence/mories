@@ -1,5 +1,6 @@
 package com.demmagence.mories.ui.screens.search
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -39,6 +40,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 import com.demmagence.mories.ui.components.ErrorState
 import com.demmagence.mories.ui.components.GenreChip
 import com.demmagence.mories.ui.components.MovieCard
+import com.demmagence.mories.ui.theme.MoriesBackground
 import com.demmagence.mories.ui.theme.MoriesPrimary
 import com.demmagence.mories.ui.theme.MoriesSurfaceVariant
 import com.demmagence.mories.ui.theme.MoriesTextSecondary
@@ -52,7 +54,7 @@ fun SearchScreen(
     val selectedFilter by viewModel.selectedFilter.collectAsStateWithLifecycle()
     val searchResults = viewModel.searchResults.collectAsLazyPagingItems()
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = Modifier.fillMaxSize().background(MoriesBackground)) {
         // Header
         Text(
             text = "Search",

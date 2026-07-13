@@ -2,6 +2,9 @@ package com.demmagence.mories.ui.navigation
 
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -27,10 +30,10 @@ fun NavGraph(
         navController = navController,
         startDestination = Screen.Home,
         modifier = modifier,
-        enterTransition = { EnterTransition.None },
-        exitTransition = { ExitTransition.None },
-        popEnterTransition = { EnterTransition.None },
-        popExitTransition = { ExitTransition.None }
+        enterTransition = { fadeIn(animationSpec = tween(150)) },
+        exitTransition = { fadeOut(animationSpec = tween(150)) },
+        popEnterTransition = { fadeIn(animationSpec = tween(150)) },
+        popExitTransition = { fadeOut(animationSpec = tween(150)) }
     ) {
         // Bottom nav destinations
         composable<Screen.Home> {
