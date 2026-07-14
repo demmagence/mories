@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -210,7 +212,8 @@ fun HomeScreen(
                     icon = Icons.Filled.EmojiEvents,
                     onItemClick = { id, _ -> onTvClick(id) }
                 )
-                Spacer(modifier = Modifier.height(96.dp))
+                val bottomPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+                Spacer(modifier = Modifier.height(bottomPadding + 80.dp))
             }
         }
     }

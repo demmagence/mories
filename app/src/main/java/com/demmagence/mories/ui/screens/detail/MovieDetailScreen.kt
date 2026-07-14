@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -334,7 +336,8 @@ fun MovieDetailScreen(
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(32.dp))
+                    val bottomPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+                    Spacer(modifier = Modifier.height(bottomPadding + 32.dp))
                 }
             }
         }

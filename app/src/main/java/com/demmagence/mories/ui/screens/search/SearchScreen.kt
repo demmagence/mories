@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalFocusManager
@@ -155,9 +157,10 @@ fun SearchScreen(
                     color = Color.White,
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                 )
+                val bottomPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(2),
-                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                    contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = bottomPadding + 16.dp),
                     horizontalArrangement = Arrangement.spacedBy(10.dp),
                     verticalArrangement = Arrangement.spacedBy(10.dp),
                     modifier = Modifier.fillMaxSize()
@@ -210,9 +213,10 @@ fun SearchScreen(
                             )
                         }
                     } else {
+                        val bottomPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
                         LazyVerticalGrid(
                             columns = GridCells.Adaptive(minSize = 140.dp),
-                            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = bottomPadding + 16.dp),
                             horizontalArrangement = Arrangement.spacedBy(10.dp),
                             verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
