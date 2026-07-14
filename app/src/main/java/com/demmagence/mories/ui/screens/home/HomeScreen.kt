@@ -126,8 +126,7 @@ fun HomeScreen(
 
                 HeroBanner(
                     items = heroBannerItems,
-                    onPlayClick = { id, mediaType -> onPlayClick(id, mediaType) },
-                    onInfoClick = { id, mediaType ->
+                    onItemClick = { id, mediaType ->
                         if (mediaType == "movie") onMovieClick(id) else onTvClick(id)
                     }
                 )
