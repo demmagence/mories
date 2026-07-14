@@ -129,23 +129,24 @@ fun SearchScreen(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Filter chips
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            listOf("all" to "All", "movie" to "Movies", "tv" to "Series").forEach { (key, label) ->
-                GenreChip(
-                    name = label,
-                    isSelected = selectedFilter == key,
-                    onClick = { viewModel.onFilterChange(key) }
-                )
+        // Filter chips (Only show when search query is not blank)
+        if (searchQuery.isNotBlank()) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                listOf("all" to "All", "movie" to "Movies", "tv" to "Series").forEach { (key, label) ->
+                    GenreChip(
+                        name = label,
+                        isSelected = selectedFilter == key,
+                        onClick = { viewModel.onFilterChange(key) }
+                    )
+                }
             }
+            Spacer(modifier = Modifier.height(12.dp))
         }
-
-        Spacer(modifier = Modifier.height(12.dp))
 
         // Results
         if (searchQuery.isBlank()) {
