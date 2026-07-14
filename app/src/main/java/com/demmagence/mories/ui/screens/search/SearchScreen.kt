@@ -160,7 +160,7 @@ fun SearchScreen(
                 val bottomPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(2),
-                    contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = bottomPadding + 48.dp),
+                    contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = bottomPadding + 16.dp),
                     horizontalArrangement = Arrangement.spacedBy(10.dp),
                     verticalArrangement = Arrangement.spacedBy(10.dp),
                     modifier = Modifier.fillMaxSize()
@@ -216,7 +216,7 @@ fun SearchScreen(
                         val bottomPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
                         LazyVerticalGrid(
                             columns = GridCells.Adaptive(minSize = 140.dp),
-                            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = bottomPadding + 48.dp),
+                            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = bottomPadding + 16.dp),
                             horizontalArrangement = Arrangement.spacedBy(10.dp),
                             verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
