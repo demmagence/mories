@@ -337,7 +337,7 @@ fun MovieDetailScreen(
                     }
 
                     val bottomPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
-                    Spacer(modifier = Modifier.height(bottomPadding + 64.dp))
+                    Spacer(modifier = Modifier.height(bottomPadding + 16.dp))
                 }
             }
         }

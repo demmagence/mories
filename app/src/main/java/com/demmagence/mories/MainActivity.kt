@@ -89,13 +89,12 @@ fun MoriesMainContent() {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(Color.Transparent)
+                        .background(MoriesSurface)
                 ) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(64.dp)
-                            .background(MoriesSurface),
+                            .height(64.dp),
                         horizontalArrangement = Arrangement.SpaceAround,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -140,7 +139,6 @@ fun MoriesMainContent() {
                         modifier = Modifier
                             .fillMaxWidth()
                             .navigationBarsPadding()
-                            .background(Color.Transparent)
                     )
                 }
             }
