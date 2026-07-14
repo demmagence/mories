@@ -213,7 +213,7 @@ fun HomeScreen(
                     onItemClick = { id, _ -> onTvClick(id) }
                 )
                 val bottomPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
-                Spacer(modifier = Modifier.height(bottomPadding + 80.dp))
+                Spacer(modifier = Modifier.height(bottomPadding + 112.dp))
             }
         }
     }
