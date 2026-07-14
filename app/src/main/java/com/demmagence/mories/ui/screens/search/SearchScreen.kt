@@ -59,6 +59,7 @@ fun SearchScreen(
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
     val selectedFilter by viewModel.selectedFilter.collectAsStateWithLifecycle()
     val genres by viewModel.genres.collectAsStateWithLifecycle()
+    val debouncedQuery by viewModel.debouncedQuery.collectAsStateWithLifecycle()
     val searchResults = viewModel.searchResults.collectAsLazyPagingItems()
 
     Column(modifier = Modifier.fillMaxSize().background(MoriesBackground)) {
@@ -82,13 +83,6 @@ fun SearchScreen(
                 onValueChange = { viewModel.onSearchQueryChange(it) },
                 placeholder = {
                     Text("Search movies & series...", color = MoriesTextSecondary)
-                },
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = "Search",
-                        tint = MoriesTextSecondary
-                    )
                 },
                 trailingIcon = {
                     if (searchQuery.isNotBlank()) {
@@ -155,19 +149,12 @@ fun SearchScreen(
                 ) {
                     items(genres.size) { index ->
                         val genre = genres[index]
-                        val gradientColors = when (index % 5) {
-                            0 -> listOf(Color(0xFFE50914).copy(alpha = 0.8f), Color(0xFF221F1F))
-                            1 -> listOf(Color(0xFF1DB954).copy(alpha = 0.8f), Color(0xFF221F1F))
-                            2 -> listOf(Color(0xFF007AFF).copy(alpha = 0.8f), Color(0xFF221F1F))
-                            3 -> listOf(Color(0xFFFF9500).copy(alpha = 0.8f), Color(0xFF221F1F))
-                            else -> listOf(Color(0xFF5856D6).copy(alpha = 0.8f), Color(0xFF221F1F))
-                        }
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(72.dp)
                                 .clip(RoundedCornerShape(8.dp))
-                                .background(Brush.horizontalGradient(gradientColors))
+                                .background(MoriesSurfaceVariant)
                                 .clickable { viewModel.onSearchQueryChange(genre.name) },
                             contentAlignment = Alignment.Center
                         ) {
@@ -180,6 +167,10 @@ fun SearchScreen(
                         }
                     }
                 }
+            }
+        } else if (searchQuery != debouncedQuery) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator(color = MoriesPrimary)
             }
         } else {
             when (val loadState = searchResults.loadState.refresh) {
