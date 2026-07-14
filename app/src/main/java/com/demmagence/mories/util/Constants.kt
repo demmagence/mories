@@ -9,10 +9,6 @@ object Constants {
     const val TMDB_STILL_SIZE = "w300"
     const val TMDB_ORIGINAL_SIZE = "original"
 
-    const val VIDKING_BASE_URL = "https://www.vidking.net/"
-    const val VIDKING_MOVIE_EMBED = "https://www.vidking.net/embed/movie/"
-    const val VIDKING_TV_EMBED = "https://www.vidking.net/embed/tv/"
-
     const val YOUTUBE_VIDEO_URL = "https://www.youtube.com/watch?v="
     const val YOUTUBE_THUMBNAIL_URL = "https://img.youtube.com/vi/"
 
@@ -37,12 +33,5 @@ object Constants {
     fun getOriginalUrl(path: String?): String {
         return if (path != null) "${TMDB_IMAGE_BASE_URL}${TMDB_ORIGINAL_SIZE}${path}" else ""
     }
-
-    fun getMovieEmbedUrl(tmdbId: Int): String {
-        return "${VIDKING_MOVIE_EMBED}${tmdbId}"
-    }
-
-    fun getTvEmbedUrl(tmdbId: Int, season: Int, episode: Int): String {
-        return "${VIDKING_TV_EMBED}${tmdbId}?s=${season}&e=${episode}"
-    }
 }
+
