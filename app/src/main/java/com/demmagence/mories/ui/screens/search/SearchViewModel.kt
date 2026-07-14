@@ -44,12 +44,16 @@ class SearchViewModel @Inject constructor(
     private val _genres = MutableStateFlow<List<Genre>>(emptyList())
     val genres: StateFlow<List<Genre>> = _genres.asStateFlow()
 
+    private val _debouncedQuery = MutableStateFlow("")
+    val debouncedQuery: StateFlow<String> = _debouncedQuery.asStateFlow()
+
     @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
     val searchResults = combine(
         _searchQuery.debounce(500),
         _selectedFilter,
         _genres
     ) { query, filter, genresList ->
+        _debouncedQuery.value = query
         Triple(query, filter, genresList)
     }.flatMapLatest { (query, filter, genresList) ->
         if (query.isBlank()) {
