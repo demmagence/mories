@@ -1,6 +1,9 @@
 package com.demmagence.mories.ui.screens.search
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -55,13 +58,16 @@ fun SearchScreen(
 ) {
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
     val selectedFilter by viewModel.selectedFilter.collectAsStateWithLifecycle()
+    val genres by viewModel.genres.collectAsStateWithLifecycle()
     val searchResults = viewModel.searchResults.collectAsLazyPagingItems()
 
     Column(modifier = Modifier.fillMaxSize().background(MoriesBackground)) {
-        // Header
+        // Header (Row with back button and Search TextField)
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 8.dp, end = 16.dp, top = 8.dp, bottom = 8.dp)
         ) {
             IconButton(onClick = onBackClick) {
                 Icon(
@@ -70,55 +76,45 @@ fun SearchScreen(
                     tint = Color.White
                 )
             }
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = "Search",
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onBackground
+            Spacer(modifier = Modifier.width(4.dp))
+            TextField(
+                value = searchQuery,
+                onValueChange = { viewModel.onSearchQueryChange(it) },
+                placeholder = {
+                    Text("Search movies & series...", color = MoriesTextSecondary)
+                },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = "Search",
+                        tint = MoriesTextSecondary
+                    )
+                },
+                trailingIcon = {
+                    if (searchQuery.isNotBlank()) {
+                        IconButton(onClick = { viewModel.onSearchQueryChange("") }) {
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = "Clear",
+                                tint = MoriesTextSecondary
+                            )
+                        }
+                    }
+                },
+                singleLine = true,
+                shape = RoundedCornerShape(12.dp),
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = MoriesSurfaceVariant,
+                    unfocusedContainerColor = MoriesSurfaceVariant,
+                    cursorColor = MoriesPrimary,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    focusedTextColor = Color.White,
+                    unfocusedTextColor = Color.White
+                ),
+                modifier = Modifier.fillMaxWidth()
             )
         }
-
-        // Search bar
-        TextField(
-            value = searchQuery,
-            onValueChange = { viewModel.onSearchQueryChange(it) },
-            placeholder = {
-                Text("Search movies & series...", color = MoriesTextSecondary)
-            },
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = "Search",
-                    tint = MoriesTextSecondary
-                )
-            },
-            trailingIcon = {
-                if (searchQuery.isNotBlank()) {
-                    IconButton(onClick = { viewModel.onSearchQueryChange("") }) {
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = "Clear",
-                            tint = MoriesTextSecondary
-                        )
-                    }
-                }
-            },
-            singleLine = true,
-            shape = RoundedCornerShape(12.dp),
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = MoriesSurfaceVariant,
-                unfocusedContainerColor = MoriesSurfaceVariant,
-                cursorColor = MoriesPrimary,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                focusedTextColor = Color.White,
-                unfocusedTextColor = Color.White
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-        )
 
         Spacer(modifier = Modifier.height(12.dp))
 
@@ -142,23 +138,47 @@ fun SearchScreen(
 
         // Results
         if (searchQuery.isBlank()) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = null,
-                        modifier = Modifier.size(64.dp),
-                        tint = MoriesTextSecondary
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(
-                        text = "Search for movies & series",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MoriesTextSecondary
-                    )
+            Column(modifier = Modifier.fillMaxSize()) {
+                Text(
+                    text = "Explore Genres",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                )
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp),
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    items(genres.size) { index ->
+                        val genre = genres[index]
+                        val gradientColors = when (index % 5) {
+                            0 -> listOf(Color(0xFFE50914).copy(alpha = 0.8f), Color(0xFF221F1F))
+                            1 -> listOf(Color(0xFF1DB954).copy(alpha = 0.8f), Color(0xFF221F1F))
+                            2 -> listOf(Color(0xFF007AFF).copy(alpha = 0.8f), Color(0xFF221F1F))
+                            3 -> listOf(Color(0xFFFF9500).copy(alpha = 0.8f), Color(0xFF221F1F))
+                            else -> listOf(Color(0xFF5856D6).copy(alpha = 0.8f), Color(0xFF221F1F))
+                        }
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(72.dp)
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(Brush.horizontalGradient(gradientColors))
+                                .clickable { viewModel.onSearchQueryChange(genre.name) },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = genre.name,
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
+                            )
+                        }
+                    }
                 }
             }
         } else {
