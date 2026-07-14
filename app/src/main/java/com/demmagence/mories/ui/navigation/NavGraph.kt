@@ -80,6 +80,9 @@ fun NavGraph(
                     } else {
                         navController.navigate(Screen.TvDetail(id))
                     }
+                },
+                onSearchClick = {
+                    navController.navigate(Screen.Search)
                 }
             )
         }
