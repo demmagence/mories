@@ -62,13 +62,24 @@ fun HeroBanner(
         return
     }
 
-    val pagerState = rememberPagerState(pageCount = { items.size.coerceAtMost(5) })
+    val displayItems = items.take(5)
+    val baseSize = displayItems.size
+    val pageCount = 10000 * baseSize
+    val startIndex = (pageCount / 2) - ((pageCount / 2) % baseSize)
+    val pagerState = rememberPagerState(
+        initialPage = startIndex,
+        pageCount = { pageCount }
+    )
 
     // Auto-scroll
     LaunchedEffect(pagerState) {
         while (true) {
             delay(5000)
-            val nextPage = (pagerState.currentPage + 1) % pagerState.pageCount
+            val nextPage = if (pagerState.currentPage + 1 < pageCount) {
+                pagerState.currentPage + 1
+            } else {
+                startIndex
+            }
             pagerState.animateScrollToPage(nextPage)
         }
     }
@@ -78,7 +89,7 @@ fun HeroBanner(
             state = pagerState,
             modifier = Modifier.fillMaxSize()
         ) { page ->
-            val item = items[page]
+            val item = displayItems[page % baseSize]
             Box(
                 modifier = Modifier
                     .fillMaxSize()
