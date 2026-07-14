@@ -144,9 +144,14 @@ fun MovieDetailScreen(
                                 .background(
                                     Brush.verticalGradient(
                                         colors = listOf(
-                                            MoriesBackground.copy(alpha = 0.3f),
+                                            MoriesBackground,
+                                            MoriesBackground.copy(alpha = 0.5f),
+                                            Color.Transparent,
+                                            Color.Transparent,
+                                            MoriesBackground.copy(alpha = 0.8f),
                                             MoriesBackground
-                                        )
+                                        ),
+                                        startY = 0f
                                     )
                                 )
                         )
@@ -302,57 +307,6 @@ fun MovieDetailScreen(
                         }
                     }
 
-                    // Reviews
-                    if (detail.reviews.isNotEmpty()) {
-                        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-                            Spacer(modifier = Modifier.height(20.dp))
-                            Text(
-                                text = "Reviews",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = Color.White
-                            )
-                            Spacer(modifier = Modifier.height(12.dp))
-
-                            detail.reviews.take(3).forEach { review ->
-                                Column(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .background(
-                                            color = Color.White.copy(alpha = 0.05f),
-                                            shape = RoundedCornerShape(8.dp)
-                                        )
-                                        .padding(12.dp)
-                                ) {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.SpaceBetween,
-                                        modifier = Modifier.fillMaxWidth()
-                                    ) {
-                                        Text(
-                                            text = review.author,
-                                            style = MaterialTheme.typography.titleSmall,
-                                            fontWeight = FontWeight.SemiBold,
-                                            color = Color.White
-                                        )
-                                        if (review.rating != null) {
-                                            RatingBar(rating = review.rating, starSize = 12.dp)
-                                        }
-                                    }
-                                    Spacer(modifier = Modifier.height(8.dp))
-                                    Text(
-                                        text = parseMarkdownToAnnotatedString(review.content),
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = MoriesOnSurfaceVariant,
-                                        maxLines = 5,
-                                        overflow = TextOverflow.Ellipsis
-                                    )
-                                }
-                                Spacer(modifier = Modifier.height(8.dp))
-                            }
-                        }
-                    }
-
                     // Similar Movies
                     if (detail.similar.isNotEmpty()) {
                         Column(modifier = Modifier.padding(start = 16.dp, end = 0.dp)) {
@@ -386,19 +340,4 @@ fun MovieDetailScreen(
         }
     }
 }
-}
-
-private fun parseMarkdownToAnnotatedString(text: String): AnnotatedString {
-    return buildAnnotatedString {
-        val parts = text.split("**")
-        parts.forEachIndexed { index, part ->
-            if (index % 2 != 0) {
-                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                    append(part)
-                }
-            } else {
-                append(part)
-            }
-        }
-    }
 }
