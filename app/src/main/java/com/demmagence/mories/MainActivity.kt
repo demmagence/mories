@@ -86,23 +86,16 @@ fun MoriesMainContent() {
                 enter = fadeIn(animationSpec = tween(150)),
                 exit = fadeOut(animationSpec = tween(150))
             ) {
-                Box(
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(
-                            brush = Brush.verticalGradient(
-                                colors = listOf(
-                                    Color.Transparent,
-                                    MoriesBackground.copy(alpha = 0.95f)
-                                )
-                            )
-                        )
-                        .navigationBarsPadding()
+                        .background(Color.Transparent)
                 ) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(64.dp),
+                            .height(64.dp)
+                            .background(MoriesSurface),
                         horizontalArrangement = Arrangement.SpaceAround,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -143,6 +136,12 @@ fun MoriesMainContent() {
                             }
                         }
                     }
+                    Spacer(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .navigationBarsPadding()
+                            .background(Color.Transparent)
+                    )
                 }
             }
         }
