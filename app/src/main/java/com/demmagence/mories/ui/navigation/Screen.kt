@@ -8,12 +8,6 @@ sealed interface Screen {
     data object Home : Screen
 
     @Serializable
-    data object Movies : Screen
-
-    @Serializable
-    data object Series : Screen
-
-    @Serializable
     data object Search : Screen
 
     @Serializable

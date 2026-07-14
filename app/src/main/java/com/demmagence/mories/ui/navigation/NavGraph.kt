@@ -15,10 +15,8 @@ import com.demmagence.mories.ui.screens.detail.MovieDetailScreen
 import com.demmagence.mories.ui.screens.detail.TvDetailScreen
 import com.demmagence.mories.ui.screens.genre.GenreListScreen
 import com.demmagence.mories.ui.screens.home.HomeScreen
-import com.demmagence.mories.ui.screens.movies.MoviesScreen
 import com.demmagence.mories.ui.screens.player.PlayerScreen
 import com.demmagence.mories.ui.screens.search.SearchScreen
-import com.demmagence.mories.ui.screens.series.SeriesScreen
 import com.demmagence.mories.ui.screens.watchlist.WatchlistScreen
 
 @Composable
@@ -52,22 +50,9 @@ fun NavGraph(
                     } else {
                         navController.navigate(Screen.TvDetail(id))
                     }
-                }
-            )
-        }
-
-        composable<Screen.Movies> {
-            MoviesScreen(
-                onMovieClick = { movieId ->
-                    navController.navigate(Screen.MovieDetail(movieId))
-                }
-            )
-        }
-
-        composable<Screen.Series> {
-            SeriesScreen(
-                onTvClick = { tvId ->
-                    navController.navigate(Screen.TvDetail(tvId))
+                },
+                onSearchClick = {
+                    navController.navigate(Screen.Search)
                 }
             )
         }
@@ -80,6 +65,9 @@ fun NavGraph(
                     } else {
                         navController.navigate(Screen.TvDetail(id))
                     }
+                },
+                onBackClick = {
+                    navController.popBackStack()
                 }
             )
         }
