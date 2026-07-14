@@ -47,17 +47,18 @@ class SearchViewModel @Inject constructor(
     @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
     val searchResults = combine(
         _searchQuery.debounce(500),
-        _selectedFilter
-    ) { query, filter ->
-        Pair(query, filter)
-    }.flatMapLatest { (query, filter) ->
+        _selectedFilter,
+        _genres
+    ) { query, filter, genresList ->
+        Triple(query, filter, genresList)
+    }.flatMapLatest { (query, filter, genresList) ->
         if (query.isBlank()) {
             flowOf(PagingData.empty())
         } else {
             Pager(
                 config = PagingConfig(pageSize = 20, prefetchDistance = 5),
                 pagingSourceFactory = {
-                    SearchPagingSource(api, query, filter)
+                    SearchPagingSource(api, query, filter, genresList)
                 }
             ).flow
         }
