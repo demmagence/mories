@@ -210,7 +210,7 @@ fun HomeScreen(
                     icon = Icons.Filled.EmojiEvents,
                     onItemClick = { id, _ -> onTvClick(id) }
                 )
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(96.dp))
             }
         }
     }

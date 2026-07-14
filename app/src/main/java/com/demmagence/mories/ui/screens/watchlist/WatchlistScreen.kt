@@ -42,7 +42,7 @@ fun WatchlistScreen(
     onSearchClick: () -> Unit,
     viewModel: WatchlistViewModel = hiltViewModel()
 ) {
-    val watchlistItems by viewModel.watchlistItems.collectAsStateWithLifecycle(initialValue = emptyList())
+    val watchlistItems by viewModel.watchlistItems.collectAsStateWithLifecycle(initialValue = null)
 
     Column(modifier = Modifier.fillMaxSize().background(MoriesBackground)) {
         // Header
@@ -68,7 +68,10 @@ fun WatchlistScreen(
             }
         }
 
-        if (watchlistItems.isEmpty()) {
+        if (watchlistItems == null) {
+            // Show nothing (blank background) during initial load to prevent flicker
+            Box(modifier = Modifier.fillMaxSize())
+        } else if (watchlistItems!!.isEmpty()) {
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
@@ -98,11 +101,11 @@ fun WatchlistScreen(
         } else {
             LazyVerticalGrid(
                 columns = GridCells.Adaptive(minSize = 140.dp),
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 96.dp),
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                items(watchlistItems, key = { "${it.id}_${it.mediaType}" }) { item ->
+                items(watchlistItems!!, key = { "${it.id}_${it.mediaType}" }) { item ->
                     MovieCard(
                         posterPath = item.posterPath,
                         title = item.title,

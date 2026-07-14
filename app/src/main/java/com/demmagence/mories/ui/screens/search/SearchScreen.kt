@@ -7,9 +7,14 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.isImeVisible
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -50,6 +55,7 @@ import com.demmagence.mories.ui.theme.MoriesPrimary
 import com.demmagence.mories.ui.theme.MoriesSurfaceVariant
 import com.demmagence.mories.ui.theme.MoriesTextSecondary
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun SearchScreen(
     onItemClick: (Int, String) -> Unit,
@@ -61,6 +67,15 @@ fun SearchScreen(
     val genres by viewModel.genres.collectAsStateWithLifecycle()
     val debouncedQuery by viewModel.debouncedQuery.collectAsStateWithLifecycle()
     val searchResults = viewModel.searchResults.collectAsLazyPagingItems()
+
+    val focusManager = LocalFocusManager.current
+    val isImeVisible = WindowInsets.isImeVisible
+
+    LaunchedEffect(isImeVisible) {
+        if (!isImeVisible) {
+            focusManager.clearFocus()
+        }
+    }
 
     Column(modifier = Modifier.fillMaxSize().background(MoriesBackground)) {
         // Header (Row with back button and Search TextField)
