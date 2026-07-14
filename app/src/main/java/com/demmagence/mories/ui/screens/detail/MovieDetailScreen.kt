@@ -121,7 +121,10 @@ fun MovieDetailScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(innerPadding)
+                        .padding(
+                            top = innerPadding.calculateTopPadding(),
+                            bottom = 0.dp
+                        )
                 ) {
                     Column(
                         modifier = Modifier
