@@ -6,6 +6,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -339,26 +341,38 @@ fun TvDetailScreen(
 
                         Spacer(modifier = Modifier.height(8.dp))
 
-                        if (uiState.isLoadingEpisodes) {
-                            Box(
-                                modifier = Modifier.fillMaxWidth().height(100.dp),
-                                contentAlignment = Alignment.Center
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .defaultMinSize(minHeight = 100.dp)
+                        ) {
+                            Column(
+                                modifier = Modifier.graphicsLayer {
+                                    alpha = if (uiState.isLoadingEpisodes) 0.3f else 1f
+                                }
                             ) {
-                                CircularProgressIndicator(color = MoriesPrimary)
+                                uiState.episodes.forEach { episode ->
+                                    EpisodeCard(
+                                        episodeNumber = episode.episodeNumber,
+                                        name = episode.name,
+                                        overview = episode.overview,
+                                        stillPath = episode.stillPath,
+                                        runtime = episode.runtime,
+                                        onClick = {
+                                            if (!uiState.isLoadingEpisodes) {
+                                                onEpisodePlay(detail.id, uiState.selectedSeason, episode.episodeNumber)
+                                            }
+                                        }
+                                    )
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                }
                             }
-                        } else {
-                            uiState.episodes.forEach { episode ->
-                                EpisodeCard(
-                                    episodeNumber = episode.episodeNumber,
-                                    name = episode.name,
-                                    overview = episode.overview,
-                                    stillPath = episode.stillPath,
-                                    runtime = episode.runtime,
-                                    onClick = {
-                                        onEpisodePlay(detail.id, uiState.selectedSeason, episode.episodeNumber)
-                                    }
+
+                            if (uiState.isLoadingEpisodes) {
+                                CircularProgressIndicator(
+                                    color = MoriesPrimary,
+                                    modifier = Modifier.align(Alignment.Center)
                                 )
-                                Spacer(modifier = Modifier.height(8.dp))
                             }
                         }
                     }
