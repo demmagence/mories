@@ -139,7 +139,7 @@ fun MoriesMainContent() {
                                 Text(
                                     text = item.label,
                                     style = MaterialTheme.typography.labelSmall,
-                                    fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
+                                    fontWeight = FontWeight.Normal,
                                     color = if (isSelected) MoriesPrimary else MoriesTextSecondary
                                 )
                             }
