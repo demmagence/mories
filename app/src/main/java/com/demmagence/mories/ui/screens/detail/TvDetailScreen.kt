@@ -142,9 +142,14 @@ fun TvDetailScreen(
                                 .background(
                                     Brush.verticalGradient(
                                         colors = listOf(
-                                            MoriesBackground.copy(alpha = 0.3f),
+                                            MoriesBackground,
+                                            MoriesBackground.copy(alpha = 0.5f),
+                                            Color.Transparent,
+                                            Color.Transparent,
+                                            MoriesBackground.copy(alpha = 0.8f),
                                             MoriesBackground
-                                        )
+                                        ),
+                                        startY = 0f
                                     )
                                 )
                         )
