@@ -6,6 +6,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.foundation.layout.PaddingValues
@@ -203,7 +205,11 @@ fun TvDetailScreen(
                         Spacer(modifier = Modifier.height(12.dp))
 
                         // Genre chips
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        @OptIn(ExperimentalLayoutApi::class)
+                        FlowRow(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
                             detail.genres.take(4).forEach { genre ->
                                 GenreChip(name = genre.name)
                             }
