@@ -6,11 +6,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.pm.ActivityInfo
 import android.graphics.Bitmap
-import android.os.Build
-import android.view.View
 import android.view.ViewGroup
-import android.view.WindowInsets
-import android.view.WindowInsetsController
 import android.webkit.CookieManager
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceError
@@ -43,18 +39,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.icons.filled.SwapHoriz
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -72,11 +65,31 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import com.demmagence.mories.ui.theme.MoriesBackground
 import com.demmagence.mories.ui.theme.MoriesPrimary
 import com.demmagence.mories.ui.theme.MoriesOnSurfaceVariant
 import com.demmagence.mories.ui.theme.MoriesTextSecondary
 import kotlinx.coroutines.delay
+
+/**
+ * VidKing embed API parameters:
+ * - color       : Hex color for player UI (without #), e.g. "e50914"
+ * - autoPlay    : Start playing automatically (true/false)
+ * - nextEpisode : Show next episode button, TV only (true/false)
+ * - episodeSelector : Enable episode selection menu, TV only (true/false)
+ *
+ * Movie URL: https://www.vidking.net/embed/movie/{tmdbId}?color=e50914&autoPlay=true
+ * TV URL:    https://www.vidking.net/embed/tv/{tmdbId}?s={season}&e={episode}&color=e50914&autoPlay=true&nextEpisode=true&episodeSelector=true
+ */
+private object VidKingApi {
+    private const val BASE_URL = "https://www.vidking.net/embed"
+    private const val COLOR = "e50914"
+
+    fun getMovieUrl(tmdbId: Int): String =
+        "$BASE_URL/movie/$tmdbId?color=$COLOR&autoPlay=true"
+
+    fun getTvUrl(tmdbId: Int, season: Int, episode: Int): String =
+        "$BASE_URL/tv/$tmdbId?s=$season&e=$episode&color=$COLOR&autoPlay=true&nextEpisode=true&episodeSelector=true"
+}
 
 /** Player states */
 private enum class PlayerState {
@@ -99,18 +112,13 @@ fun PlayerScreen(
     val activity = context as? Activity
 
     var playerState by remember { mutableStateOf(PlayerState.LOADING) }
-    var currentProviderIndex by remember { mutableIntStateOf(0) }
     var webViewInstance by remember { mutableStateOf<WebView?>(null) }
-    var hasTimedOut by remember { mutableStateOf(false) }
 
-    val providers = StreamingProvider.providerChain
-    val currentProvider = providers.getOrNull(currentProviderIndex) ?: providers.first()
-
-    val embedUrl = remember(currentProviderIndex) {
+    val embedUrl = remember {
         when (mediaType) {
-            "movie" -> currentProvider.getMovieUrl(tmdbId)
-            "tv" -> currentProvider.getTvUrl(tmdbId, season, episode)
-            else -> currentProvider.getMovieUrl(tmdbId)
+            "movie" -> VidKingApi.getMovieUrl(tmdbId)
+            "tv" -> VidKingApi.getTvUrl(tmdbId, season, episode)
+            else -> VidKingApi.getMovieUrl(tmdbId)
         }
     }
 
@@ -118,7 +126,7 @@ fun PlayerScreen(
     DisposableEffect(Unit) {
         activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
 
-        // Enter immersive mode
+        // Enter immersive mode — hide status bar + navigation bar
         activity?.window?.let { window ->
             WindowCompat.setDecorFitsSystemWindows(window, false)
             val controller = WindowInsetsControllerCompat(window, window.decorView)
@@ -138,20 +146,12 @@ fun PlayerScreen(
         }
     }
 
-    // Timeout fallback: if loading takes > 20 seconds, try next provider
-    LaunchedEffect(currentProviderIndex, playerState) {
+    // Timeout: if loading takes > 30 seconds, show error
+    LaunchedEffect(playerState) {
         if (playerState == PlayerState.LOADING) {
-            hasTimedOut = false
-            delay(20_000L)
+            delay(30_000L)
             if (playerState == PlayerState.LOADING) {
-                hasTimedOut = true
-                // Try next provider automatically
-                if (currentProviderIndex < providers.size - 1) {
-                    currentProviderIndex++
-                    playerState = PlayerState.LOADING
-                } else {
-                    playerState = PlayerState.ERROR
-                }
+                playerState = PlayerState.ERROR
             }
         }
     }
@@ -163,7 +163,7 @@ fun PlayerScreen(
             .fillMaxSize()
             .background(Color.Black)
     ) {
-        // WebView layer (always present but hidden during loading/error)
+        // WebView layer
         AndroidView(
             factory = { ctx ->
                 WebView(ctx).apply {
@@ -195,10 +195,8 @@ fun PlayerScreen(
                         mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
                         javaScriptCanOpenWindowsAutomatically = false
                         setSupportMultipleWindows(false)
-                        userAgentString = "Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Mobile Safari/537.36"
                         allowContentAccess = true
-                        @Suppress("DEPRECATION")
-                        allowUniversalAccessFromFileURLs = false
+                        userAgentString = "Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Mobile Safari/537.36"
                     }
 
                     webViewClient = object : WebViewClient() {
@@ -208,18 +206,14 @@ fun PlayerScreen(
                             favicon: Bitmap?
                         ) {
                             super.onPageStarted(view, url, favicon)
-                            // Keep loading state
                         }
 
                         override fun onPageFinished(view: WebView?, url: String?) {
                             super.onPageFinished(view, url)
-                            // Inject CSS/JS overrides
-                            view?.evaluateJavascript(buildInjectionScript(), null)
-
-                            // Delay slightly then show player
+                            // Small delay to let VidKing player initialize before showing
                             view?.postDelayed({
                                 playerState = PlayerState.PLAYING
-                            }, 800)
+                            }, 1000)
                         }
 
                         override fun onReceivedError(
@@ -229,12 +223,7 @@ fun PlayerScreen(
                         ) {
                             // Only handle main frame errors
                             if (request?.isForMainFrame == true) {
-                                if (currentProviderIndex < providers.size - 1) {
-                                    currentProviderIndex++
-                                    playerState = PlayerState.LOADING
-                                } else {
-                                    playerState = PlayerState.ERROR
-                                }
+                                playerState = PlayerState.ERROR
                             }
                         }
 
@@ -243,8 +232,25 @@ fun PlayerScreen(
                             request: WebResourceRequest?
                         ): Boolean {
                             val url = request?.url?.toString() ?: return false
-                            // Block navigation away from provider domains
-                            return !StreamingProvider.isUrlAllowed(url, currentProvider)
+                            // Allow VidKing domains and common video CDNs
+                            val allowedDomains = listOf(
+                                "vidking.net",
+                                "googleapis.com",
+                                "gstatic.com",
+                                "cloudflare.com",
+                                "jwpcdn.com",
+                                "jwplayer.com",
+                                "jwpsrv.com",
+                                "cdn.jsdelivr.net",
+                                "unpkg.com",
+                                "plyr.io",
+                                "hlsjs.video-dev.org",
+                                "cdnjs.cloudflare.com",
+                                "videasy.to"
+                            )
+                            return !allowedDomains.any { domain ->
+                                url.contains(domain, ignoreCase = true)
+                            }
                         }
                     }
 
@@ -261,15 +267,6 @@ fun PlayerScreen(
                     loadUrl(embedUrl)
                 }
             },
-            update = { webView ->
-                // When provider changes, load new URL
-                val currentUrl = webView.url ?: ""
-                if (!currentUrl.contains(currentProvider.name) || playerState == PlayerState.LOADING) {
-                    if (currentUrl != embedUrl) {
-                        webView.loadUrl(embedUrl)
-                    }
-                }
-            },
             modifier = Modifier.fillMaxSize()
         )
 
@@ -279,7 +276,7 @@ fun PlayerScreen(
             enter = fadeIn(tween(300)),
             exit = fadeOut(tween(500))
         ) {
-            LoadingOverlay(title = title, providerName = currentProvider.displayName)
+            LoadingOverlay(title = title)
         }
 
         // Error overlay
@@ -289,19 +286,9 @@ fun PlayerScreen(
             exit = fadeOut(tween(300))
         ) {
             ErrorOverlay(
-                currentProviderIndex = currentProviderIndex,
-                totalProviders = providers.size,
                 onRetry = {
                     playerState = PlayerState.LOADING
                     webViewInstance?.loadUrl(embedUrl)
-                },
-                onTryNextServer = {
-                    if (currentProviderIndex < providers.size - 1) {
-                        currentProviderIndex++
-                    } else {
-                        currentProviderIndex = 0
-                    }
-                    playerState = PlayerState.LOADING
                 },
                 onBack = onBackClick
             )
@@ -310,198 +297,10 @@ fun PlayerScreen(
 }
 
 /**
- * Builds the JavaScript injection script for:
- * 1. Color override (blue → red #E50914)
- * 2. Ad/overlay removal
- * 3. Popup blocking
- * 4. Touch event fix for play button
- */
-private fun buildInjectionScript(): String = """
-    (function() {
-        'use strict';
-        
-        // === 1. COLOR OVERRIDE ===
-        var style = document.createElement('style');
-        style.textContent = `
-            /* Override CSS custom properties */
-            :root, *, *::before, *::after {
-                --primary-color: #E50914 !important;
-                --accent-color: #E50914 !important;
-                --primary: #E50914 !important;
-                --accent: #E50914 !important;
-                --theme-color: #E50914 !important;
-                --main-color: #E50914 !important;
-                --brand-color: #E50914 !important;
-                --color-primary: #E50914 !important;
-                --highlight: #E50914 !important;
-            }
-            
-            /* JW Player overrides */
-            .jw-progress,
-            .jw-slider-time .jw-progress,
-            .jw-slider-volume .jw-progress {
-                background-color: #E50914 !important;
-                background: #E50914 !important;
-            }
-            .jw-button-color,
-            .jw-svg-icon {
-                color: #E50914 !important;
-                fill: #E50914 !important;
-            }
-            .jw-icon-rewind .jw-svg-icon,
-            .jw-icon-next .jw-svg-icon,
-            .jw-icon-playback .jw-svg-icon {
-                color: #FFFFFF !important;
-                fill: #FFFFFF !important;
-            }
-            .jw-knob {
-                background-color: #E50914 !important;
-            }
-            
-            /* Video.js overrides */
-            .vjs-play-progress,
-            .vjs-volume-level {
-                background-color: #E50914 !important;
-                background: #E50914 !important;
-            }
-            .vjs-big-play-button {
-                background-color: #E50914 !important;
-                border-color: #E50914 !important;
-            }
-            .vjs-slider-handle,
-            .vjs-play-progress::before {
-                background-color: #E50914 !important;
-                color: #E50914 !important;
-            }
-            
-            /* Plyr overrides */
-            .plyr--full-ui input[type=range]::-webkit-slider-thumb {
-                background: #E50914 !important;
-            }
-            .plyr--full-ui input[type=range]:active::-webkit-slider-thumb {
-                background: #E50914 !important;
-            }
-            .plyr__control--overlaid {
-                background: #E50914 !important;
-            }
-            .plyr--video .plyr__control:hover {
-                background: #E50914 !important;
-            }
-            
-            /* Generic overrides for progress bars and buttons */
-            [class*="progress"]:not([class*="bg"]),
-            [class*="Progress"]:not([class*="bg"]) {
-                background-color: #E50914 !important;
-            }
-            [class*="slider"] [class*="fill"],
-            [class*="Slider"] [class*="Fill"],
-            [class*="played"] {
-                background-color: #E50914 !important;
-            }
-            [class*="knob"],
-            [class*="Knob"],
-            [class*="thumb"],
-            [class*="Thumb"] {
-                background-color: #E50914 !important;
-            }
-            
-            /* Hide common ad/overlay elements */
-            [id*="ad-"], [id*="ads-"], [id*="advert"],
-            [class*="ad-overlay"], [class*="ads-overlay"],
-            [class*="popup"], [class*="Popup"],
-            [class*="overlay-ad"], [class*="ad_overlay"],
-            [class*="banner-ad"], [class*="afs_ads"],
-            div[data-ad], div[data-ads],
-            iframe[src*="doubleclick"],
-            iframe[src*="googlesyndication"],
-            .ad-container, .ads-container,
-            #player-ads, #video-ads,
-            [class*="promo-"], [class*="sponsor"] {
-                display: none !important;
-                visibility: hidden !important;
-                width: 0 !important;
-                height: 0 !important;
-                opacity: 0 !important;
-                pointer-events: none !important;
-            }
-        `;
-        document.head.appendChild(style);
-        
-        // === 2. INLINE COLOR OVERRIDE ===
-        try {
-            var blueShades = [
-                'rgb(33, 150, 243)', 'rgb(25, 118, 210)',
-                'rgb(30, 136, 229)', 'rgb(66, 165, 245)',
-                'rgb(13, 71, 161)', 'rgb(21, 101, 192)',
-                '#2196F3', '#1976D2', '#1E88E5',
-                '#42A5F5', '#0D47A1', '#1565C0',
-                '#2196f3', '#1976d2', '#1e88e5',
-                '#42a5f5', '#0d47a1', '#1565c0'
-            ];
-            var elements = document.querySelectorAll('*');
-            for (var i = 0; i < elements.length; i++) {
-                var el = elements[i];
-                var computed = window.getComputedStyle(el);
-                if (blueShades.indexOf(computed.color) !== -1) {
-                    el.style.setProperty('color', '#E50914', 'important');
-                }
-                if (blueShades.indexOf(computed.backgroundColor) !== -1) {
-                    el.style.setProperty('background-color', '#E50914', 'important');
-                }
-                if (blueShades.indexOf(computed.borderColor) !== -1) {
-                    el.style.setProperty('border-color', '#E50914', 'important');
-                }
-            }
-        } catch(e) {}
-        
-        // === 3. BLOCK POPUPS ===
-        window.open = function() { return null; };
-        
-        // Block alert/confirm/prompt
-        window.alert = function() {};
-        window.confirm = function() { return false; };
-        window.prompt = function() { return null; };
-        
-        // === 4. FIX TOUCH EVENTS ===
-        document.addEventListener('touchend', function(e) {
-            var target = e.target;
-            var playButton = target.closest('[class*="play"], [class*="Play"], button, [role="button"], .jw-icon-playback, .vjs-big-play-button, .plyr__control--overlaid');
-            if (playButton) {
-                e.preventDefault();
-                e.stopPropagation();
-                playButton.click();
-                
-                // Also try to find and play video element directly
-                var video = document.querySelector('video');
-                if (video && video.paused) {
-                    try { video.play(); } catch(err) {}
-                }
-            }
-        }, { passive: false, capture: true });
-        
-        // Re-run color override after a delay for dynamically loaded content
-        setTimeout(function() {
-            var style2 = document.createElement('style');
-            style2.textContent = style.textContent;
-            document.head.appendChild(style2);
-        }, 3000);
-        
-        setTimeout(function() {
-            var style3 = document.createElement('style');
-            style3.textContent = style.textContent;
-            document.head.appendChild(style3);
-        }, 6000);
-    })();
-""".trimIndent()
-
-/**
  * Premium loading overlay with Mories branding.
  */
 @Composable
-private fun LoadingOverlay(
-    title: String,
-    providerName: String
-) {
+private fun LoadingOverlay(title: String) {
     val infiniteTransition = rememberInfiniteTransition(label = "pulse")
     val pulseScale by infiniteTransition.animateFloat(
         initialValue = 0.85f,
@@ -571,28 +370,16 @@ private fun LoadingOverlay(
                 color = MoriesOnSurfaceVariant,
                 fontSize = 14.sp
             )
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            // Provider info
-            Text(
-                text = providerName,
-                color = MoriesTextSecondary,
-                fontSize = 12.sp
-            )
         }
     }
 }
 
 /**
- * Error overlay with retry and server switch options.
+ * Error overlay with retry option.
  */
 @Composable
 private fun ErrorOverlay(
-    currentProviderIndex: Int,
-    totalProviders: Int,
     onRetry: () -> Unit,
-    onTryNextServer: () -> Unit,
     onBack: () -> Unit
 ) {
     Box(
@@ -625,58 +412,29 @@ private fun ErrorOverlay(
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "Periksa koneksi internet Anda\natau coba server lain",
+                text = "Periksa koneksi internet Anda\ndan coba lagi",
                 color = MoriesOnSurfaceVariant,
                 fontSize = 14.sp,
                 textAlign = TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = "Server ${currentProviderIndex + 1} dari $totalProviders",
-                color = MoriesTextSecondary,
-                fontSize = 12.sp
-            )
-
             Spacer(modifier = Modifier.height(24.dp))
 
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            // Retry button
+            Button(
+                onClick = onRetry,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MoriesPrimary
+                ),
+                shape = RoundedCornerShape(8.dp)
             ) {
-                // Retry button
-                Button(
-                    onClick = onRetry,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MoriesPrimary
-                    ),
-                    shape = RoundedCornerShape(8.dp)
-                ) {
-                    Icon(
-                        Icons.Filled.Refresh,
-                        contentDescription = null,
-                        modifier = Modifier.size(18.dp)
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text("Coba Lagi")
-                }
-
-                // Try next server
-                OutlinedButton(
-                    onClick = onTryNextServer,
-                    shape = RoundedCornerShape(8.dp),
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = Color.White
-                    )
-                ) {
-                    Icon(
-                        Icons.Filled.SwapHoriz,
-                        contentDescription = null,
-                        modifier = Modifier.size(18.dp)
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text("Server Lain")
-                }
+                Icon(
+                    Icons.Filled.Refresh,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp)
+                )
+                Spacer(modifier = Modifier.width(6.dp))
+                Text("Coba Lagi")
             }
         }
     }
