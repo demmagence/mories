@@ -42,6 +42,7 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -297,30 +298,10 @@ fun PlayerScreen(
 }
 
 /**
- * Premium loading overlay with Mories branding.
+ * Loading overlay with Mories branding.
  */
 @Composable
 private fun LoadingOverlay(title: String) {
-    val infiniteTransition = rememberInfiniteTransition(label = "pulse")
-    val pulseScale by infiniteTransition.animateFloat(
-        initialValue = 0.85f,
-        targetValue = 1.15f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(800),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "pulseScale"
-    )
-    val pulseAlpha by infiniteTransition.animateFloat(
-        initialValue = 0.5f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(800),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "pulseAlpha"
-    )
-
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -331,27 +312,13 @@ private fun LoadingOverlay(title: String) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Pulsing play icon
-            Box(
-                modifier = Modifier
-                    .size(80.dp)
-                    .scale(pulseScale)
-                    .alpha(pulseAlpha)
-                    .background(MoriesPrimary, CircleShape),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.PlayArrow,
-                    contentDescription = null,
-                    tint = Color.White,
-                    modifier = Modifier.size(48.dp)
-                )
-            }
+            CircularProgressIndicator(
+                color = MoriesPrimary,
+                modifier = Modifier.size(48.dp)
+            )
 
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Title
             if (title.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(16.dp))
                 Text(
                     text = title,
                     color = Color.White,
@@ -361,15 +328,7 @@ private fun LoadingOverlay(title: String) {
                     maxLines = 2,
                     modifier = Modifier.padding(horizontal = 32.dp)
                 )
-                Spacer(modifier = Modifier.height(8.dp))
             }
-
-            // Loading text
-            Text(
-                text = "Memuat...",
-                color = MoriesOnSurfaceVariant,
-                fontSize = 14.sp
-            )
         }
     }
 }
