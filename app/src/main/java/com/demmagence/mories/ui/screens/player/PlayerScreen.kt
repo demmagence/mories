@@ -123,9 +123,21 @@ fun PlayerScreen(
                         cacheMode = WebSettings.LOAD_DEFAULT
                         mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
                         javaScriptCanOpenWindowsAutomatically = false
-                        setSupportMultipleWindows(false)
+                        setSupportMultipleWindows(true) // Enable multiple windows to intercept popups
                         allowContentAccess = true
                         userAgentString = "Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Mobile Safari/537.36"
+                    }
+
+                    webChromeClient = object : android.webkit.WebChromeClient() {
+                        override fun onCreateWindow(
+                            view: WebView?,
+                            isDialog: Boolean,
+                            isUserGesture: Boolean,
+                            resultMsg: android.os.Message?
+                        ): Boolean {
+                            // Return false to block all popup windows (ads)
+                            return false
+                        }
                     }
 
                     webViewClient = object : WebViewClient() {
@@ -133,7 +145,19 @@ fun PlayerScreen(
                             view: WebView?,
                             request: WebResourceRequest?
                         ): Boolean {
-                            // Let WebView handle loading internally
+                            val isMainFrame = request?.isForMainFrame ?: false
+                            val host = request?.url?.host ?: ""
+
+                            if (isMainFrame) {
+                                // Allow vidsrc domains for top-level navigation
+                                if (host.contains("vidsrc")) {
+                                    return false // Let WebView handle it
+                                }
+                                // Block all other top-level redirects (ads)
+                                return true
+                            }
+
+                            // Allow iframe and sub-resource navigations (video hosts like vidplay, etc.)
                             return false
                         }
                     }
